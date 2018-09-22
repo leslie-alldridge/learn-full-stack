@@ -1,23 +1,30 @@
-import React, { Component } from 'react';
-import { HashRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+import React, { Component } from "react";
+import { HashRouter as Router, Route, Link, Redirect } from "react-router-dom";
 
-import InternapAPI from './InternapAPI';
-import ExternalAPI from './ExternalAPI';
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
-import Logout from './Logout';
+import InternapAPI from "./InternapAPI";
+import ExternalAPI from "./ExternalAPI";
+import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
+import Logout from "./Logout";
+import LandingPage from "./LandingPage";
+import Redux from "./Redux";
 
-import { isAuthenticated, getUserTokenInfo } from '../utils/auth';
+import { isAuthenticated, getUserTokenInfo } from "../utils/auth";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       authenticated: false,
-      loggedInAs: ''
+      loggedInAs: "",
+      buttonToggle: false,
+      landingPage: true,
+      reduxPage: false
     };
     this.logOut = this.logOut.bind(this);
+    this.reduxToggle = this.reduxToggle.bind(this);
     this.refreshLoginState = this.refreshLoginState.bind(this);
+    this.buttonToggle = this.buttonToggle.bind(this);
   }
 
   componentDidMount() {
@@ -36,14 +43,33 @@ class App extends Component {
     });
   }
 
+  buttonToggle() {
+    this.setState(prevState => ({
+      buttonToggle: !prevState.buttonToggle
+    }));
+  }
+
+  reduxToggle() {
+    this.setState({
+      landingPage: false,
+      reduxPage: true
+    });
+  }
+
   render() {
     return (
       <Router>
         <div className="container">
           <div className="jumbotron">
-            <h1>Hello World</h1>
-            <p>
-              {this.state.authenticated ? 'Logged in as: ' : 'Please log in'}
+            {this.state.landingPage && (
+              <LandingPage
+                buttonToggle={this.buttonToggle}
+                redux={this.reduxToggle}
+              />
+            )}
+            {this.state.reduxPage && <Redux />}
+            <p id="bottom">
+              {this.state.authenticated ? "Logged in as: " : "Please log in"}
             </p>
             <p>{this.state.authenticated && getUserTokenInfo().username}</p>
             <Link to="/">
